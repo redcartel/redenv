@@ -1,0 +1,14 @@
+#! /bin/bash
+echo 1 | sudo tee /sys/devices/system/cpu/cpu1/online
+echo 1 | sudo tee /sys/devices/system/cpu/cpu2/online
+echo 1 | sudo tee /sys/devices/system/cpu/cpu3/online
+
+sudo cpufreq-set -c 0 -u 3.1GHz -g performance
+sudo cpufreq-set -c 1 -u 3.1GHz -g performance
+sudo cpufreq-set -c 2 -u 3.1GHz -g performance
+sudo cpufreq-set -c 3 -u 3.1GHz -g performance
+
+bright 9
+
+sudo service bluetooth start
+dboxstart

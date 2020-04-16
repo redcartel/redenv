@@ -1,0 +1,15 @@
+#! /bin/bash
+
+if [ -z $1 ]; then
+    echo "bright        - utility by Carter Adams
+    bright [value] (0-9)
+    uses /sys/class/backlight/intel_backlight/brightness interface."
+    exit
+else
+    val="$(expr $1 - 1)"
+    bright="$(expr $val \* 150 + 315)"
+    #bright="$(expr $val * 150 + 315)"
+    echo $bright
+fi
+
+sudo sh -c "echo $bright > /sys/class/backlight/intel_backlight/brightness"

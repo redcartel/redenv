@@ -1,0 +1,6 @@
+#! /bin/sh
+
+tree -f -a | \
+    egrep -v "(node_modules)|(\.pyc)|(\/venv\/)|(cache)|(\.git\/)" | \
+    sed -e "s/\.\/.*\///" | \
+    sed -e "s/\.\///"

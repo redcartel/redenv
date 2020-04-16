@@ -1,0 +1,5 @@
+#! /bin/bash
+
+ARGS="$(ls -r $HOME/Documents/NOTES/*.md | xargs)"
+cat $ARGS > $HOME/tmp/tmpnotes.md
+view $HOME/tmp/tmpnotes.md

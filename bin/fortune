@@ -1,0 +1,6 @@
+#! /usr/bin/env python3
+from random import choice
+import os 
+DIRNAME = os.path.dirname(__file__)
+
+print(choice(list(open(os.path.join(DIRNAME, 'kjvdat.txt')))))

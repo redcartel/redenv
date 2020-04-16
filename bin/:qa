@@ -1,0 +1,9 @@
+#! /bin/bash
+
+# :qa - close all windows on this workspace
+
+# get current i3 workspace number
+WORKSPACE_NUMBER=`python3 -c "import json; print(next(filter(lambda w: w['focused'], json.loads('$(i3-msg -t get_workspaces)')))['name'])"`
+echo $WORKSPACE_NUMBER
+
+i3-msg [workspace=$WORKSPACE_NUMBER] kill

@@ -1,0 +1,144 @@
+#! /usr/bin/python3
+""" Create a github repository """
+import pprint
+import sys
+import os
+from json.decoder import JSONDecodeError
+import requests
+
+DOC = """
+repocreate reponame "description of repo" [remote-add]
+"""
+
+DEFAULT_DESC = "DELETEME or write a better description"
+
+HOME = os.environ['HOME']
+
+TOKENFILE = HOME + "/.credentials/GITHUB.txt"
+try:
+    TOKEN = os.environ.get("TOKEN", open(TOKENFILE).read().strip()) 
+except FileNotFoundError:
+    print("could not find token in ~/.credentials/GITHUB.txt")
+    quit()
+
+
+#GITIGNOREFILE = HOME + "/shared/.gitignore"
+#if not os.path.isfile(GITIGNOREFILE):
+#    GITIGNOREFILE = ""
+
+def repocreate(name, description):
+    """ create a repository on github """
+    giturl = "https://api.github.com/user/repos"
+    headers = {"Authorization": "token {}".format(TOKEN)}
+    payload = {"name": name, "description": description}
+    response = requests.post(giturl, headers=headers, json=payload)
+    try:
+        results = response.json()
+    except JSONDecodeError:
+        results = {}
+
+    if "ssh_url" in results:
+        return {'success_url': results["ssh_url"]}
+    return response.__dict__
+
+
+def handle_delete(repo_name, force=False):
+    username=os.environ["USER"]
+    giturl = f"https://api.github.com/repos/{username}/{repo_name}"
+    response = requests.get(giturl)
+    if response.status_code != 200:
+        print(f"code {response.status_code} from GET {giturl}")
+        quit()
+    try:
+        text = response.text
+        data = response.json()
+    except JSONDecodeError as e:
+        print(e)
+        print("encountered decoding:")
+        print(text)
+        quit()
+
+    can_delete = False
+    if "DELETEME" in data["description"]:
+        can_delete = True
+
+    giturl = f"https://api.github.com/repos/{username}/{repo_name}/commits"
+    response = requests.get(giturl)
+    ncommits = len(response.json())
+    if ncommits < 5:
+        can_delete = True
+
+    headers = {"Authorization": "token {}".format(TOKEN)}
+
+def parse_create_return(api_result):
+    """ respond to the POST call. return repo url if successful, quit with
+    error otherwise """
+
+    if 'success_url' not in api_result:
+        if api_result.get('status_code') == 422:
+            pass
+            #try_again = handle_delete(repo_name)
+        pprint.pprint(api_result)
+        print("\nFailure to create. Try unsetting $TOKEN in bash?")
+        quit()
+    return(api_result['success_url'])
+
+RESERVED in ('set-url', 'clone', 'push', 'gitignore', 'delete')
+
+def run(repo_name, *args):
+    """ run the program with parameters """
+    description = DEFAULT_DESC if not args else args[0]
+    
+    if description in RESERVED:
+        description = DEFAULT_DESC
+    #set_url = "set-url" in args
+    #clone = "clone" in args
+    #push = "push" in args
+    #gitignore = "gitignore" in args
+    #delete = "delete" in args
+    #force = "force" in args
+    #target = args[-1] if len(args >= 2) and args[-1] not in RESERVED else ""
+
+    #if repo_name == "delete":
+    #    handle_delete(args[0], force)
+    #elif set_url:
+    #    repo_url = parse_create_return(repocreate(repo_name, description))
+    #    print(repo_url)
+    #    command = f"git remote add origin {repo_url}"
+    #    print(command)
+    #    output = os.popen(command).read()
+    #    print(output)
+    #    if push:
+    #        command = f"git push origin master"
+    #        print(command)
+    #        output = os.popen(command).read()
+
+    #elif clone:
+    #    repo_url = parse_create_return(repocreate(repo_name, description))
+    #    print(repo_url)
+    #    if target in ("clone", "gitignore"):
+    #        target = repo_name
+    #    command = f"git clone {repo_url} {target}"
+    #    print(command)
+    #    print(os.popen(command).read())
+    #    if gitignore:
+    #        command = f"cp {GITIGNORE} ./{repo_name}/.gitignore"
+    #        print(command)
+    #        output = os.popen(command).read()
+    #        print(output)
+
+    #elif delete:
+    #    handle_delete(reponame, force)
+
+    else:
+        repo_url = parse_create_return(repocreate(repo_name, description))
+        print(repo_url)
+
+
+
+
+if __name__ == "__main__":
+    try:
+        run(sys.argv[1], *sys.argv[2:])
+    except IndexError:
+        print(DOC)

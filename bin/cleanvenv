@@ -1,0 +1,3 @@
+#! /bin/bash
+
+$VENVS = "$(find . -path '*/bin/activate_this.py' | sed -e 's/\/bin\/activate_this.py//' | xargs)"

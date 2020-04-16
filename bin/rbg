@@ -1,0 +1,6 @@
+#! /bin/bash
+IMAGE_FOLDER=$HOME/etc/bgimages
+IMAGE="$(ls $IMAGE_FOLDER/* | grep -i '\.\(png\|jpe\?g\)$' | sort -R | tail -n1)"
+echo $IMAGE
+# gsettings set org.gnome.desktop.background picture-uri file://$IMAGE
+nohup feh --bg-fill $IMAGE &> /dev/null &

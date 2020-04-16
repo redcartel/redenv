@@ -1,0 +1,4 @@
+#! /bin/bash
+
+dropbox start >/dev/null 2>&1
+nohup cpulimit -p `pidof dropbox` -l 15 >/dev/null 2>&1 &

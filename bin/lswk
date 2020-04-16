@@ -1,0 +1,13 @@
+#! /usr/bin/python3
+
+import os
+
+HOMEDIR = os.environ['HOME']
+LOGFILE = os.path.join(HOMEDIR, 'var', 'log', 'wk.log')
+
+with open(LOGFILE, 'r') as logfile:
+    lines = list(logfile)
+prefix = [' ' for _ in lines]
+prefix[-9:-1] = [str(i) for i in range(9,1,-1)]
+for line, pref in zip(lines, prefix):
+    print(pref + ": " + line, end='')

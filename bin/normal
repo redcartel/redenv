@@ -1,0 +1,15 @@
+#! /bin/bash
+
+echo 1 | sudo tee /sys/devices/system/cpu/cpu1/online
+echo 1 | sudo tee /sys/devices/system/cpu/cpu2/online
+echo 0 | sudo tee /sys/devices/system/cpu/cpu3/online
+
+sudo cpufreq-set -c 0 -u 3.1GHz -g performance
+sudo cpufreq-set -c 1 -u 2.5GHz -g powersave
+sudo cpufreq-set -c 2 -u 2.5GHz -g powersave
+
+sudo $HOME/bin/bright 6
+
+sudo service bluetooth stop
+# dropbox stop
+# pkill dropbox

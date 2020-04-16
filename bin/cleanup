@@ -1,0 +1,6 @@
+#! /bin/bash
+
+find . | \
+    egrep "(/__pycache__$)|(/__MACOSX$)" | \
+#    egrep -v "/venv/.+" | \
+    xargs
